@@ -1,0 +1,99 @@
+# Node Modules
+#########################################################
+node_modules/
+
+# Playwright Reports
+#########################################################
+playwright-report/
+blob-report/
+reports/
+test-results/
+
+# Allure Reports
+#########################################################
+allure-results/
+allure-report/
+
+# Screenshots / Videos / Traces
+#########################################################
+*.png
+*.webm
+*.zip
+
+# Logs
+#########################################################
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build Output
+#########################################################
+dist/
+build/
+out/
+
+# Coverage
+#########################################################
+coverage/
+.nyc_output/
+
+# OS Generated Files
+#########################################################
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE Files
+#########################################################
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+.idea/
+*.iml
+
+# Temporary Files
+#########################################################
+tmp/
+temp/
+.cache/
+
+# TypeScript
+#########################################################
+*.tsbuildinfo
+
+# Package Manager
+#########################################################
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Miscellaneous
+#########################################################
+*.bak
+*.tmp
+*.swp
+
+# Playwright Browser Downloads (Optional)
+#########################################################
+playwright/.cache/
+
+# Local Authentication / Storage State
+#########################################################
+storageState/
+auth/
+*.auth.json
+
+# API Test Generated Files
+#########################################################
+api-response/
+downloads/
+uploads/
+
+# Mac / Linux Hidden Files
+#########################################################
+.AppleDouble
+.LSOverride

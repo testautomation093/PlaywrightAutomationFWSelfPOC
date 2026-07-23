@@ -1,0 +1,22 @@
+{
+  "name": "pwautomationfwself",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "keywords": [],
+  "author": "Nishant Goel",
+  "license": "ISC",
+  "description": "This is a framework for automation of web applications using Playwright and TypeScript.",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1"
+  },
+  "dependencies": {
+    "allure-commandline": "^2.43.0",
+    "allure-playwright": "^3.10.2",
+    "csv-parse": "^7.0.1",
+    "dotenv": "^17.4.2",
+    "xlsx": "^0.18.5"
+  }
+}
