@@ -8,11 +8,26 @@ on:
     branches: [main]
 
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select Environment'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - stage
+          - dev
+          - uat
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    # Selected environment when manually triggered.
+    # Defaults to qa for push/pull_request events.
+    environment: ${{ github.event.inputs.environment || 'qa' }}
 
     steps:
       - name: Checkout Code
@@ -30,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Dependencies
         run: npm ci
@@ -40,14 +55,17 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
-      # Install only OS dependencies when browsers are restored from cache
+      # Install OS dependencies when browser cache exists
       - name: Install Playwright OS Dependencies (Cached)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
+      - name: Display Selected Environment
+        run: echo "Running against ${{ github.event.inputs.environment || 'qa' }}"
+
       - name: Run Playwright Tests
         env:
-          ENV: qa
+          ENV: ${{ github.event.inputs.environment || 'qa' }}
         run: npx playwright test --project=chromium
 
       - name: Upload HTML Report
