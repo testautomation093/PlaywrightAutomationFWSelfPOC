@@ -88,7 +88,7 @@ pipeline {
 
                 dir('Application') {
 
-                    git branch: 'main',
+                    git branch: 'master',
                         url: "${DEV_REPOSITORY}"
 
                     sh """
@@ -216,7 +216,7 @@ pipeline {
 
                 dir('PlaywrightAutomation') {
 
-                    git branch: 'main',
+                    git branch: 'master',
                         url: "${PLAYWRIGHT_REPOSITORY}"
 
                     sh """
