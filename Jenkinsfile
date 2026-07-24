@@ -208,107 +208,146 @@ pipeline {
         }
 
         //==============================================================================
-        // STEP 4
-        // QA REGRESSION TESTS
-        //==============================================================================
+// STEP 4
+// QA REGRESSION TESTS
+//==============================================================================
 
-        stage('STEP 4 : Execute QA Regression Tests') {
+stage('STEP 4 : Execute QA Regression Tests') {
 
-            steps {
+    steps {
 
-                echo ""
-                echo "==============================================================="
-                echo "EXECUTING PLAYWRIGHT REGRESSION TESTS"
-                echo "==============================================================="
+                    echo ""
+                    echo "==============================================================="
+                    echo "EXECUTING PLAYWRIGHT REGRESSION TESTS"
+                    echo "==============================================================="
 
-                dir('PlaywrightAutomation') {
+                    dir('PlaywrightAutomation') {
 
-                    git branch: 'master',
-                        url: "${PLAYWRIGHT_REPOSITORY}"
+                        git branch: 'master',
+                            url: "${PLAYWRIGHT_REPOSITORY}"
 
-                    bat """
+                        bat """
 
-                        set PATH=%NODEJS_HOME%\\bin;%PATH%
+                            echo =====================================================
+                            echo Node Version
+                            echo =====================================================
+                            call node -v
 
-                        echo "=========================================="
+                            echo.
+                            echo =====================================================
+                            echo NPM Version
+                            echo =====================================================
+                            call npm -v
 
-                        echo "Installing NPM Dependencies"
+                            echo.
+                            echo =====================================================
+                            echo NPX Version
+                            echo =====================================================
+                            call npx -v
 
-                        npm ci
+                            echo.
+                            echo =====================================================
+                            echo Current Working Directory
+                            echo =====================================================
+                            cd
 
-                        echo ""
+                            echo.
+                            echo =====================================================
+                            echo Repository Contents
+                            echo =====================================================
+                            dir
 
-                        echo "Installing Playwright Browsers"
+                            echo.
+                            echo =====================================================
+                            echo Installing NPM Dependencies
+                            echo =====================================================
+                            call npm ci
 
-                        npx playwright install --with-deps chromium
+                            echo.
+                            echo =====================================================
+                            echo Installing Playwright Browsers
+                            echo =====================================================
+                            call npx playwright install chromium
 
-                        echo ""
+                            echo.
+                            echo =====================================================
+                            echo Running QA Regression Suite
+                            echo =====================================================
 
-                        echo "Running Regression Suite"
+                            set ENV=qa
 
-                        set ENV=qa && npx playwright test --project=chromium
+                            call npx playwright test --project=chromium
 
-                        echo ""
+                            echo.
+                            echo =====================================================
+                            echo Generating Allure Report
+                            echo =====================================================
 
-                        echo "Generating Allure Report"
+                            call npx allure generate allure-results --clean -o allure-report
 
-                        npx allure generate allure-results --clean -o allure-report
+                            echo.
+                            echo =====================================================
+                            echo STEP 4 COMPLETED SUCCESSFULLY
+                            echo =====================================================
 
-                    """
+                        """
 
-                }
-
-            }
-
-            post {
-
-                always {
-
-                    archiveArtifacts artifacts: '''
-                        PlaywrightAutomation/reports/html-report/**,
-                        PlaywrightAutomation/allure-report/**
-                    ''',
-                    fingerprint: true
-
-                    archiveArtifacts artifacts: '''
-                        PlaywrightAutomation/allure-results/**
-                    ''',
-                    fingerprint: true
-
-                    publishHTML(target: [
-
-                        allowMissing: true,
-
-                        alwaysLinkToLastBuild: true,
-
-                        keepAll: true,
-
-                        reportDir: 'PlaywrightAutomation/reports/html-report',
-
-                        reportFiles: 'index.html',
-
-                        reportName: 'QA Regression HTML Report'
-
-                    ])
-
-                    allure(
-
-                        includeProperties: false,
-
-                        jdk: '',
-
-                        results: [[
-                            path: 'PlaywrightAutomation/allure-results'
-                        ]]
-
-                    )
+                    }
 
                 }
 
-            }
+                post {
 
-        }	
-		
+                    always {
+
+                        archiveArtifacts(
+                            artifacts: '''
+            PlaywrightAutomation/reports/html-report/**,
+            PlaywrightAutomation/allure-report/**
+            ''',
+                            fingerprint: true,
+                            allowEmptyArchive: true
+                        )
+
+                        archiveArtifacts(
+                            artifacts: 'PlaywrightAutomation/allure-results/**',
+                            fingerprint: true,
+                            allowEmptyArchive: true
+                        )
+
+                        publishHTML(target: [
+
+                            allowMissing: true,
+
+                            alwaysLinkToLastBuild: true,
+
+                            keepAll: true,
+
+                            reportDir: 'PlaywrightAutomation/reports/html-report',
+
+                            reportFiles: 'index.html',
+
+                            reportName: 'QA Regression HTML Report'
+
+                        ])
+
+                        allure(
+
+                            includeProperties: false,
+
+                            jdk: 'jdk17',
+
+                            results: [[
+                                path: 'PlaywrightAutomation/allure-results'
+                            ]]
+
+                        )
+
+                    }
+
+                }
+
+            }		
 	    //==============================================================================
         // STEP 5
         // DEPLOY TO STAGE
