@@ -91,19 +91,19 @@ pipeline {
                     git branch: 'master',
                         url: "${DEV_REPOSITORY}"
 
-                    sh """
+                    bat """
 
                         echo "Cleaning Previous Build..."
 
-                        ${MAVEN_HOME}/bin/mvn clean
+                        call "%MAVEN_HOME%\\bin\\mvn.cmd" clean
 
                         echo "Running Unit Tests..."
 
-                        ${MAVEN_HOME}/bin/mvn test
+                        call "%MAVEN_HOME%\\bin\\mvn.cmd" test
 
                         echo "Packaging Application..."
 
-                        ${MAVEN_HOME}/bin/mvn package
+                        call "%MAVEN_HOME%\\bin\\mvn.cmd" package
 
                     """
 
@@ -140,7 +140,7 @@ pipeline {
                 echo "DEPLOYING APPLICATION TO DEV"
                 echo "==============================================================="
 
-                sh '''
+                bat '''
 
                     echo ""
                     echo "Downloading Build Artifact..."
@@ -181,7 +181,7 @@ pipeline {
                 echo "DEPLOYING APPLICATION TO QA"
                 echo "==============================================================="
 
-                sh '''
+                bat '''
 
                     echo ""
                     echo "Application Successfully Deployed to QA"
@@ -219,9 +219,9 @@ pipeline {
                     git branch: 'master',
                         url: "${PLAYWRIGHT_REPOSITORY}"
 
-                    sh """
+                    bat """
 
-                        export PATH=${NODEJS_HOME}/bin:\$PATH
+                        set PATH=%NODEJS_HOME%\\bin;%PATH%
 
                         echo "=========================================="
 
@@ -239,15 +239,13 @@ pipeline {
 
                         echo "Running Regression Suite"
 
-                        ENV=qa npx playwright test --project=chromium
+                        set ENV=qa && npx playwright test --project=chromium
 
                         echo ""
 
                         echo "Generating Allure Report"
 
-                        npx allure generate allure-results \
-                            --clean \
-                            -o allure-report
+                        npx allure generate allure-results --clean -o allure-report
 
                     """
 
@@ -318,7 +316,7 @@ pipeline {
                 echo "DEPLOYING APPLICATION TO STAGE"
                 echo "==============================================================="
 
-                sh '''
+                bat '''
 
                     echo ""
                     echo "Application Successfully Deployed to STAGE"
@@ -353,9 +351,9 @@ pipeline {
 
                 dir('PlaywrightAutomation') {
 
-                    sh """
+                    bat """
 
-                        export PATH=${NODEJS_HOME}/bin:\$PATH
+                        set PATH=%NODEJS_HOME%\\bin;%PATH%
 
                         echo "=========================================="
 
@@ -373,15 +371,13 @@ pipeline {
 
                         echo "Running STAGE Sanity Suite"
 
-                        ENV=stage npx playwright test --grep @sanity --project=chromium
+                        set ENV=stage && npx playwright test --grep @sanity --project=chromium
 
                         echo ""
 
                         echo "Generating Allure Report"
 
-                        npx allure generate allure-results \
-                            --clean \
-                            -o allure-report
+                        npx allure generate allure-results --clean -o allure-report 
 
                     """
 
@@ -453,7 +449,7 @@ pipeline {
                 echo "DEPLOYING APPLICATION TO PRODUCTION"
                 echo "==============================================================="
 
-                sh '''
+                bat '''
 
                     echo ""
                     echo "Application Successfully Deployed to PROD"
