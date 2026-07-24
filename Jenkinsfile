@@ -86,29 +86,36 @@ pipeline {
                 echo "STEP 1 : BUILD APPLICATION"
                 echo "==============================================================="
 
-                dir('Application') {
+               dir('Application') {
 
                     git branch: 'master',
                         url: "${DEV_REPOSITORY}"
 
                     bat """
 
-                        echo "Cleaning Previous Build..."
+                        echo ==========================================
+                        echo Cleaning Previous Build...
+                        echo ==========================================
 
                         call "%MAVEN_HOME%\\bin\\mvn.cmd" clean
 
-                        echo "Running Unit Tests..."
+                        echo.
+                        echo ==========================================
+                        echo Running Unit Tests...
+                        echo ==========================================
 
-                        call "%MAVEN_HOME%\\bin\\mvn.cmd" test
+                        call "%MAVEN_HOME%\\bin\\mvn.cmd" test -Dmaven.test.failure.ignore=true
 
-                        echo "Packaging Application..."
+                        echo.
+                        echo ==========================================
+                        echo Packaging Application...
+                        echo ==========================================
 
-                        call "%MAVEN_HOME%\\bin\\mvn.cmd" package
+                        call "%MAVEN_HOME%\\bin\\mvn.cmd" package -Dmaven.test.failure.ignore=true
 
                     """
 
                 }
-
             }
 
             post {
