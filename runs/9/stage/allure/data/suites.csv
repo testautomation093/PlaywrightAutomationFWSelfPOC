@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1441","Forgot Password Link Exist Test @sanity","chromium","2026-07-24","passed","2026-07-24","","loginPage.spec.ts","",""
+"","1009","Login Page Title Test @sanity","chromium","2026-07-24","passed","2026-07-24","","loginPage.spec.ts","",""

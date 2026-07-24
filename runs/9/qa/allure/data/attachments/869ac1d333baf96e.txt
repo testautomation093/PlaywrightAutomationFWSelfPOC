@@ -1,0 +1,8 @@
+Response Body is :  {
+  id: 8556061,
+  name: 'Nishant Automation',
+  email: 'nltech1784878736227@gmail.com',
+  gender: 'male',
+  status: 'active'
+}
+User ID is :  8556061

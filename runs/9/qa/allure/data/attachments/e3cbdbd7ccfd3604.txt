@@ -1,0 +1,72 @@
+Response Body is :  [
+  {
+    id: 8556059,
+    name: 'Nishant Automation',
+    email: 'nltech1784878485620@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8556051,
+    name: 'Nishant Automation',
+    email: 'nltech1784878316613@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8555530,
+    name: 'Devi Sinha',
+    email: 'devi_sinha@jenkins.example',
+    gender: 'female',
+    status: 'inactive'
+  },
+  {
+    id: 8555529,
+    name: 'Nirbhay Pandey',
+    email: 'nirbhay_pandey@wisozk-barrows.example',
+    gender: 'female',
+    status: 'active'
+  },
+  {
+    id: 8555528,
+    name: 'Manikya Pothuvaal',
+    email: 'manikya_pothuvaal@ruecker-emmerich.test',
+    gender: 'male',
+    status: 'inactive'
+  },
+  {
+    id: 8555526,
+    name: 'Msgr. Bhagwanti Mahajan',
+    email: 'msgr_bhagwanti_mahajan@okuneva.test',
+    gender: 'male',
+    status: 'inactive'
+  },
+  {
+    id: 8555525,
+    name: 'Ayushmati Iyengar',
+    email: 'ayushmati_iyengar@blanda.example',
+    gender: 'female',
+    status: 'inactive'
+  },
+  {
+    id: 8555524,
+    name: 'Sukanya Sharma',
+    email: 'sharma_sukanya@ohara.test',
+    gender: 'female',
+    status: 'inactive'
+  },
+  {
+    id: 8555523,
+    name: 'Vasudha Sethi',
+    email: 'sethi_vasudha@veum.example',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8555521,
+    name: 'Ritesh Saini',
+    email: 'saini_ritesh@farrell.test',
+    gender: 'female',
+    status: 'active'
+  }
+]
