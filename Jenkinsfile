@@ -216,138 +216,128 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
     steps {
 
-                    echo ""
-                    echo "==============================================================="
-                    echo "EXECUTING PLAYWRIGHT REGRESSION TESTS"
-                    echo "==============================================================="
+        echo ""
+        echo "==============================================================="
+        echo "EXECUTING PLAYWRIGHT REGRESSION TESTS"
+        echo "==============================================================="
 
-                    dir('PlaywrightAutomation') {
+        dir('PlaywrightAutomation') {
 
-                        git branch: 'master',
-                            url: "${PLAYWRIGHT_REPOSITORY}"
+            git branch: 'master',
+                url: "${PLAYWRIGHT_REPOSITORY}"
 
-                        bat """
+            bat """
 
-                            echo =====================================================
-                            echo Node Version
-                            echo =====================================================
-                            call node -v
+                echo =====================================================
+                echo Node Version
+                echo =====================================================
+                call node -v
 
-                            echo.
-                            echo =====================================================
-                            echo NPM Version
-                            echo =====================================================
-                            call npm -v
+                echo.
+                echo =====================================================
+                echo NPM Version
+                echo =====================================================
+                call npm -v
 
-                            echo.
-                            echo =====================================================
-                            echo NPX Version
-                            echo =====================================================
-                            call npx -v
+                echo.
+                echo =====================================================
+                echo NPX Version
+                echo =====================================================
+                call npx -v
 
-                            echo.
-                            echo =====================================================
-                            echo Current Working Directory
-                            echo =====================================================
-                            cd
+                echo.
+                echo =====================================================
+                echo Current Working Directory
+                echo =====================================================
+                cd
 
-                            echo.
-                            echo =====================================================
-                            echo Repository Contents
-                            echo =====================================================
-                            dir
+                echo.
+                echo =====================================================
+                echo Repository Contents
+                echo =====================================================
+                dir
 
-                            echo.
-                            echo =====================================================
-                            echo Installing NPM Dependencies
-                            echo =====================================================
-                            call npm ci
+                echo.
+                echo =====================================================
+                echo Installing NPM Dependencies
+                echo =====================================================
+                call npm ci
 
-                            echo.
-                            echo =====================================================
-                            echo Installing Playwright Browsers
-                            echo =====================================================
-                            call npx playwright install chromium
+                echo.
+                echo =====================================================
+                echo Installing Playwright Browsers
+                echo =====================================================
+                call npx playwright install chromium
 
-                            echo.
-                            echo =====================================================
-                            echo Running QA Regression Suite
-                            echo =====================================================
+                echo.
+                echo =====================================================
+                echo Running QA Regression Suite
+                echo =====================================================
 
-                            set ENV=qa
+                set ENV=qa
 
-                            call npx playwright test --project=chromium
+                call npx playwright test --project=chromium
 
-                            echo.
-                            echo =====================================================
-                            echo Generating Allure Report
-                            echo =====================================================
+                echo.
+                echo =====================================================
+                echo STEP 4 COMPLETED SUCCESSFULLY
+                echo =====================================================
 
-                            call npx allure generate allure-results --clean -o allure-report
+            """
 
-                            echo.
-                            echo =====================================================
-                            echo STEP 4 COMPLETED SUCCESSFULLY
-                            echo =====================================================
+        }
 
-                        """
+    }
 
-                    }
+    post {
 
-                }
+        always {
 
-                post {
+            archiveArtifacts(
+                artifacts: 'PlaywrightAutomation/reports/html-report/**',
+                fingerprint: true,
+                allowEmptyArchive: true
+            )
 
-                    always {
+            archiveArtifacts(
+                artifacts: 'PlaywrightAutomation/allure-results/**',
+                fingerprint: true,
+                allowEmptyArchive: true
+            )
 
-                        archiveArtifacts(
-                            artifacts: '''
-            PlaywrightAutomation/reports/html-report/**,
-            PlaywrightAutomation/allure-report/**
-            ''',
-                            fingerprint: true,
-                            allowEmptyArchive: true
-                        )
+            publishHTML(target: [
 
-                        archiveArtifacts(
-                            artifacts: 'PlaywrightAutomation/allure-results/**',
-                            fingerprint: true,
-                            allowEmptyArchive: true
-                        )
+                allowMissing: true,
 
-                        publishHTML(target: [
+                alwaysLinkToLastBuild: true,
 
-                            allowMissing: true,
+                keepAll: true,
 
-                            alwaysLinkToLastBuild: true,
+                reportDir: 'PlaywrightAutomation/reports/html-report-qa',
 
-                            keepAll: true,
+                reportFiles: 'index.html',
 
-                            reportDir: 'PlaywrightAutomation/reports/html-report',
+                reportName: 'QA Regression HTML Report'
 
-                            reportFiles: 'index.html',
+            ])
 
-                            reportName: 'QA Regression HTML Report'
+            allure(
 
-                        ])
+                includeProperties: false,
 
-                        allure(
+                jdk: 'jdk17',
 
-                            includeProperties: false,
+                results: [[
+                    path: 'PlaywrightAutomation/allure-results-qa'
+                ]]
 
-                            jdk: 'jdk17',
+            )
 
-                            results: [[
-                                path: 'PlaywrightAutomation/allure-results'
-                            ]]
+        }
 
-                        )
+    }
 
-                    }
-
-                }
-
-            }		
+}	
 	    //==============================================================================
         // STEP 5
         // DEPLOY TO STAGE
@@ -388,98 +378,97 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
         stage('STEP 6 : Execute STAGE Sanity Tests') {
 
-            steps {
+    steps {
 
-                echo ""
-                echo "==============================================================="
-                echo "EXECUTING PLAYWRIGHT SANITY TESTS"
-                echo "==============================================================="
+        echo ""
+        echo "==============================================================="
+        echo "EXECUTING PLAYWRIGHT SANITY TESTS"
+        echo "==============================================================="
 
-                dir('PlaywrightAutomation') {
+        dir('PlaywrightAutomation') {
 
-                    bat """
+            bat """
 
-                        set PATH=%NODEJS_HOME%\\bin;%PATH%
+                echo =====================================================
+                echo Installing NPM Dependencies
+                echo =====================================================
+                call npm ci
 
-                        echo "=========================================="
+                echo.
+                echo =====================================================
+                echo Installing Playwright Browsers
+                echo =====================================================
+                call npx playwright install chromium
 
-                        echo "Installing NPM Dependencies"
+                echo.
+                echo =====================================================
+                echo Running STAGE Sanity Suite
+                echo =====================================================
 
-                        npm ci
+                set ENV=stage
 
-                        echo ""
+                call npx playwright test --grep @sanity --project=chromium
 
-                        echo "Installing Playwright Browsers"
+                echo.
+                echo =====================================================
+                echo STEP 6 COMPLETED SUCCESSFULLY
+                echo =====================================================
 
-                        npx playwright install --with-deps chromium
-
-                        echo ""
-
-                        echo "Running STAGE Sanity Suite"
-
-                        set ENV=stage && npx playwright test --grep @sanity --project=chromium
-
-                        echo ""
-
-                        echo "Generating Allure Report"
-
-                        npx allure generate allure-results --clean -o allure-report 
-
-                    """
-
-                }
-
-            }
-
-            post {
-
-                always {
-
-                    archiveArtifacts artifacts: '''
-                        PlaywrightAutomation/reports/html-report/**,
-                        PlaywrightAutomation/allure-report/**
-                    ''',
-                    fingerprint: true
-
-                    archiveArtifacts artifacts: '''
-                        PlaywrightAutomation/allure-results/**
-                    ''',
-                    fingerprint: true
-
-                    publishHTML(target: [
-
-                        allowMissing: true,
-
-                        alwaysLinkToLastBuild: true,
-
-                        keepAll: true,
-
-                        reportDir: 'PlaywrightAutomation/reports/html-report',
-
-                        reportFiles: 'index.html',
-
-                        reportName: 'STAGE Sanity HTML Report'
-
-                    ])
-
-                    allure(
-
-                        includeProperties: false,
-
-                        jdk: '',
-
-                        results: [[
-                            path: 'PlaywrightAutomation/allure-results'
-                        ]]
-
-                    )
-
-                }
-
-            }
+            """
 
         }
 
+    }
+
+    post {
+
+        always {
+
+            archiveArtifacts(
+                artifacts: 'PlaywrightAutomation/reports/html-report/**',
+                fingerprint: true,
+                allowEmptyArchive: true
+            )
+
+            archiveArtifacts(
+                artifacts: 'PlaywrightAutomation/allure-results/**',
+                fingerprint: true,
+                allowEmptyArchive: true
+            )
+
+            publishHTML(target: [
+
+                allowMissing: true,
+
+                alwaysLinkToLastBuild: true,
+
+                keepAll: true,
+
+                reportDir: 'PlaywrightAutomation/reports/html-report-stage',
+
+                reportFiles: 'index.html',
+
+                reportName: 'STAGE Sanity HTML Report'
+
+            ])
+
+            allure(
+
+                includeProperties: false,
+
+                jdk: 'jdk17',
+
+                results: [[
+                    path: 'PlaywrightAutomation/allure-results-stage'
+                ]]
+
+            )
+
+        }
+
+    }
+
+}
         //==============================================================================
         // STEP 7
         // DEPLOY TO PROD
