@@ -10,13 +10,13 @@ test.beforeEach(async ({loginPage})=>
 });
 
 
-test("Login Page Title Test", async ({loginPage})=>
+test("Login Page Title Test @sanity", async ({loginPage})=>
 {
     let title=await loginPage.getLoginPageTitle();
     expect(title).toBe("Account Login");
 });
 
-    test("Forgot Password Link Exist Test", async ({loginPage})=>
+test("Forgot Password Link Exist Test @sanity", async ({loginPage})=>
     {
     let isForgotPwdLinkAvailable=await loginPage.isForgotPwdLinkAvailable();
     expect(isForgotPwdLinkAvailable).toBe(true);
