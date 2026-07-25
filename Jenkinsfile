@@ -228,62 +228,47 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
             bat """
 
-                echo =====================================================
-                echo Node Version
-                echo =====================================================
-                call node -v
+    echo =====================================================
+    echo Node Version
+    echo =====================================================
+    call node -v
 
-                echo.
-                echo =====================================================
-                echo NPM Version
-                echo =====================================================
-                call npm -v
+    echo.
+    echo =====================================================
+    echo Installing NPM Dependencies
+    echo =====================================================
+    call npm ci
 
-                echo.
-                echo =====================================================
-                echo NPX Version
-                echo =====================================================
-                call npx -v
+    echo.
+    echo =====================================================
+    echo Installing Playwright Browsers
+    echo =====================================================
+    call npx playwright install chromium
 
-                echo.
-                echo =====================================================
-                echo Current Working Directory
-                echo =====================================================
-                cd
+    echo.
+    echo =====================================================
+    echo Running QA Regression Suite
+    echo =====================================================
 
-                echo.
-                echo =====================================================
-                echo Repository Contents
-                echo =====================================================
-                dir
+    set ENV=qa
 
-                echo.
-                echo =====================================================
-                echo Installing NPM Dependencies
-                echo =====================================================
-                call npm ci
+    call npx playwright test --project=chromium
 
-                echo.
-                echo =====================================================
-                echo Installing Playwright Browsers
-                echo =====================================================
-                call npx playwright install chromium
+    echo.
+    echo =====================================================
+    echo Generating QA Allure Report
+    echo =====================================================
 
-                echo.
-                echo =====================================================
-                echo Running QA Regression Suite
-                echo =====================================================
+    if exist allure-report rmdir /S /Q allure-report
 
-                set ENV=qa
+    call npx allure generate allure-results --clean -o allure-report
 
-                call npx playwright test --project=chromium
+    echo.
+    echo =====================================================
+    echo STEP 4 COMPLETED SUCCESSFULLY
+    echo =====================================================
 
-                echo.
-                echo =====================================================
-                echo STEP 4 COMPLETED SUCCESSFULLY
-                echo =====================================================
-
-            """
+"""
 
         }
 
@@ -291,53 +276,45 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
     post {
 
-        always {
+    always {
 
-            archiveArtifacts(
-                artifacts: 'PlaywrightAutomation/reports/html-report/**',
-                fingerprint: true,
-                allowEmptyArchive: true
-            )
+        archiveArtifacts(
+            artifacts: '''
+                PlaywrightAutomation/reports/html-report/**,
+                PlaywrightAutomation/allure-report/**,
+                PlaywrightAutomation/allure-results/**
+            ''',
+            fingerprint: true,
+            allowEmptyArchive: true
+        )
 
-            archiveArtifacts(
-                artifacts: 'PlaywrightAutomation/allure-results/**',
-                fingerprint: true,
-                allowEmptyArchive: true
-            )
+        publishHTML(target: [
 
-            publishHTML(target: [
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
 
-                allowMissing: true,
+            reportDir: 'PlaywrightAutomation/reports/html-report',
+            reportFiles: 'index.html',
+            reportName: 'QA Playwright HTML Report'
 
-                alwaysLinkToLastBuild: true,
+        ])
 
-                keepAll: true,
+        publishHTML(target: [
 
-                reportDir: 'PlaywrightAutomation/reports/html-report-qa',
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
 
-                reportFiles: 'index.html',
+            reportDir: 'PlaywrightAutomation/allure-report',
+            reportFiles: 'index.html',
+            reportName: 'QA Allure Report'
 
-                reportName: 'QA Regression HTML Report'
-
-            ])
-
-            allure(
-
-                includeProperties: false,
-
-                jdk: 'jdk17',
-
-                results: [[
-                    path: 'PlaywrightAutomation/allure-results-qa'
-                ]]
-
-            )
-
-        }
+        ])
 
     }
 
-}	
+}
 	    //==============================================================================
         // STEP 5
         // DEPLOY TO STAGE
@@ -411,7 +388,7 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
                 echo.
                 echo =====================================================
-                echo STEP 6 COMPLETED SUCCESSFULLY
+                echo STAGE SANITY EXECUTION COMPLETED
                 echo =====================================================
 
             """
@@ -420,55 +397,8 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
     }
 
-    post {
-
-        always {
-
-            archiveArtifacts(
-                artifacts: 'PlaywrightAutomation/reports/html-report/**',
-                fingerprint: true,
-                allowEmptyArchive: true
-            )
-
-            archiveArtifacts(
-                artifacts: 'PlaywrightAutomation/allure-results/**',
-                fingerprint: true,
-                allowEmptyArchive: true
-            )
-
-            publishHTML(target: [
-
-                allowMissing: true,
-
-                alwaysLinkToLastBuild: true,
-
-                keepAll: true,
-
-                reportDir: 'PlaywrightAutomation/reports/html-report-stage',
-
-                reportFiles: 'index.html',
-
-                reportName: 'STAGE Sanity HTML Report'
-
-            ])
-
-            allure(
-
-                includeProperties: false,
-
-                jdk: 'jdk17',
-
-                results: [[
-                    path: 'PlaywrightAutomation/allure-results-stage'
-                ]]
-
-            )
-
-        }
-
-    }
-
 }
+
         //==============================================================================
         // STEP 7
         // DEPLOY TO PROD
