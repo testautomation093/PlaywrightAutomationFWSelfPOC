@@ -322,17 +322,17 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
         ])
 
-        publishHTML(target: [
+        allure(
 
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
+            includeProperties: false,
 
-            reportDir: 'PlaywrightAutomation/allure-report',
-            reportFiles: 'index.html',
-            reportName: 'QA Allure Report'
+            jdk: 'jdk17',
 
-        ])
+            results: [[
+                path: 'PlaywrightAutomation/allure-results'
+            ]]
+
+        )
 
     }
 
