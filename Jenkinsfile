@@ -256,6 +256,28 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
     echo.
     echo =====================================================
+    echo VERIFYING REPORTS
+    echo =====================================================
+
+    echo Current Folder
+    cd
+
+    echo.
+
+    echo Playwright HTML Report
+    dir reports
+
+    echo.
+
+    dir reports\html-report
+
+    echo.
+
+    echo Allure Results
+    dir allure-results
+
+    echo.
+    echo =====================================================
     echo Generating QA Allure Report
     echo =====================================================
 
