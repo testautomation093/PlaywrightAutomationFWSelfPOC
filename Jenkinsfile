@@ -269,7 +269,7 @@ stage('STEP 4 : Execute QA Regression Tests') {
 
     echo.
 
-    dir reports\html-report
+    dir reports\\html-report
 
     echo.
 
