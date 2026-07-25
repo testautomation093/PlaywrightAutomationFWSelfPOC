@@ -34,7 +34,7 @@ test("Fetch the Single Users Data", async ({request})=>
 test("Create a New User Test", async ({request})=>
 {
     let userData ={
-                "name": "Nishant Automation",
+                "name": "Nishant Goel Automation",
                 "email": `nltech${Date.now()}@gmail.com`,
                 "gender": "male",
                 "status": "active"
