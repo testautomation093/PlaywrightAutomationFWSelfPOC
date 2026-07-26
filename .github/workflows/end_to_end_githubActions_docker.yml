@@ -1,0 +1,814 @@
+name: Enterprise Playwright CI/CD Pipeline (Docker)
+
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select Target Environment"
+        required: true
+        default: prod
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+jobs:
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 1
+# BUILD APPLICATION + UNIT TESTS
+# DEV SOURCE CODE REPOSITORY
+# ═══════════════════════════════════════════════════════════════
+
+  build:
+
+    name: 🏗️ Build Application & Unit Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Display Pipeline Information
+        run: |
+          echo "=============================================="
+          echo "ENTERPRISE PLAYWRIGHT CI/CD PIPELINE"
+          echo "=============================================="
+          echo "Triggered By : ${{ github.actor }}"
+          echo "Branch       : ${{ github.ref_name }}"
+          echo "Run Number   : ${{ github.run_number }}"
+          echo "Environment  : ${{ github.event.inputs.environment || 'qa' }}"
+          echo "=============================================="
+
+      # ---------------------------------------------------------
+      # Checkout DEV Repository
+      # ---------------------------------------------------------
+
+      - name: Checkout DEV Repository
+        uses: actions/checkout@v4
+        with:
+          repository: jglick/simple-maven-project-with-tests
+
+      # ---------------------------------------------------------
+      # Setup Java
+      # ---------------------------------------------------------
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # ---------------------------------------------------------
+      # Verify Java
+      # ---------------------------------------------------------
+
+      - name: Verify Java Version
+        run: |
+          java -version
+          mvn -version
+
+      # ---------------------------------------------------------
+      # Build Application
+      # ---------------------------------------------------------
+
+      - name: Build Maven Project
+        run: |
+          echo ""
+          echo "===================================="
+          echo "Building Maven Application..."
+          echo "===================================="
+
+          mvn clean compile
+
+      # ---------------------------------------------------------
+      # Run Unit Tests
+      # ---------------------------------------------------------
+
+      - name: Execute Unit Tests
+        run: |
+          echo ""
+          echo "===================================="
+          echo "Executing Unit Test Cases..."
+          echo "===================================="
+
+          mvn test
+
+      # ---------------------------------------------------------
+      # Package Application
+      # ---------------------------------------------------------
+
+      - name: Package Application
+        run: |
+          echo ""
+          echo "===================================="
+          echo "Packaging Maven Application..."
+          echo "===================================="
+
+          mvn package -DskipTests
+
+      # ---------------------------------------------------------
+      # Upload Surefire Reports
+      # ---------------------------------------------------------
+
+      - name: Upload Unit Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: target/surefire-reports/
+          retention-days: 30
+
+      # ---------------------------------------------------------
+      # Upload Maven Artifact
+      # ---------------------------------------------------------
+
+      - name: Upload Build Artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-build
+          path: target/*.jar
+          retention-days: 30
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 2
+# DEPLOY TO DEV
+# (SIMULATION ONLY)
+# ═══════════════════════════════════════════════════════════════
+
+  deploy-dev:
+
+    name: 🚀 Deploy Application to DEV
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    environment: dev
+
+    steps:
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build-artifact
+
+      - name: Verify Artifact
+        run: |
+          echo ""
+          echo "Downloaded Build Artifact"
+          ls -R build-artifact
+
+      - name: Deploy to DEV
+        run: |
+          echo ""
+          echo "=============================================="
+          echo "Deploying Application to DEV Environment"
+          echo "=============================================="
+          echo ""
+          echo "Deployment Successful ✅"
+          echo ""
+          echo "URL : https://dev.company.com"
+          echo ""
+          echo "NOTE:"
+          echo "No Automation Tests Executed on DEV"
+          echo "=============================================="
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 3
+# DEPLOY TO QA
+# (SIMULATION ONLY)
+# ═══════════════════════════════════════════════════════════════
+
+  deploy-qa:
+
+    name: 🚀 Deploy Application to QA
+
+    needs: deploy-dev
+
+    runs-on: ubuntu-latest
+
+    environment: qa
+
+    steps:
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build-artifact
+
+      - name: Deploy to QA
+        run: |
+          echo ""
+          echo "=============================================="
+          echo "Deploying Application to QA Environment"
+          echo "=============================================="
+          echo ""
+          echo "Deployment Successful ✅"
+          echo ""
+          echo "Automation Regression Suite will now start..."
+          echo "=============================================="
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 4
+# QA REGRESSION TESTS (DOCKER)
+# QA AUTOMATION REPOSITORY
+# ═══════════════════════════════════════════════════════════════
+
+  qa-regression:
+
+    name: 🧪 QA Regression Tests (Docker)
+
+    needs: deploy-qa
+
+    runs-on: ubuntu-latest
+
+    environment: qa
+
+    timeout-minutes: 30
+
+    steps:
+
+      # ---------------------------------------------------------
+      # Checkout QA Automation Repository
+      # ---------------------------------------------------------
+
+      - name: Checkout QA Automation Repository
+        uses: actions/checkout@v4
+        with:
+          repository: testautomation093/pw-framework
+
+      # ---------------------------------------------------------
+      # Pull Docker Image from Docker Hub
+      # ---------------------------------------------------------
+
+      - name: Pull Docker Image
+        run: |
+
+          echo ""
+          echo "=============================================="
+          echo "Pulling Docker Image From Docker Hub"
+          echo "=============================================="
+
+          docker pull testautomation093/pw-framework:latest
+
+      # ---------------------------------------------------------
+      # Display Docker Images
+      # ---------------------------------------------------------
+
+      - name: Verify Docker Image
+        run: |
+
+          docker images
+
+      # ---------------------------------------------------------
+      # Execute Regression Suite inside Docker
+      # ---------------------------------------------------------
+
+      - name: Execute QA Regression Suite
+        run: |
+
+          echo ""
+          echo "=============================================="
+          echo "Running Regression Suite Inside Docker"
+          echo "=============================================="
+
+          mkdir -p reports
+          mkdir -p allure-results
+
+          docker run --rm \
+            -e CI=true \
+            -e ENV=qa \
+            -v ${{ github.workspace }}/reports:/app/reports \
+            -v ${{ github.workspace }}/allure-results:/app/allure-results \
+            testautomation093/pw-framework:latest
+
+      # ---------------------------------------------------------
+      # Generate Allure Report
+      # ---------------------------------------------------------
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+
+          sudo npm install -g allure-commandline
+
+          allure generate allure-results --clean -o allure-report
+
+      # ---------------------------------------------------------
+      # Upload HTML Report
+      # ---------------------------------------------------------
+
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-html-report
+          path: reports/html-report/
+          retention-days: 30
+
+      # ---------------------------------------------------------
+      # Upload Allure Report
+      # ---------------------------------------------------------
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-allure-report
+          path: allure-report/
+          retention-days: 30
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 5
+# DEPLOY TO STAGE
+# (SIMULATION ONLY)
+# ═══════════════════════════════════════════════════════════════
+
+  deploy-stage:
+
+    name: 🚀 Deploy Application to STAGE
+
+    needs: qa-regression
+
+    runs-on: ubuntu-latest
+
+    environment: stage
+
+    steps:
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build-artifact
+
+      - name: Verify Build Artifact
+        run: |
+          echo ""
+          echo "Downloaded Build Artifact"
+          ls -R build-artifact
+
+      - name: Deploy to STAGE
+        run: |
+          echo ""
+          echo "=============================================="
+          echo "Deploying Application to STAGE Environment"
+          echo "=============================================="
+
+          echo ""
+          echo "Deployment Successful ✅"
+
+          echo ""
+          echo "STAGE Sanity Suite will now start..."
+
+          echo "=============================================="
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 6
+# STAGE SANITY TESTS
+# USING DOCKER IMAGE FROM DOCKER HUB
+# ═══════════════════════════════════════════════════════════════
+
+  stage-sanity:
+
+    name: 🧪 STAGE Sanity Tests
+
+    needs: deploy-stage
+
+    runs-on: ubuntu-latest
+
+    environment: stage
+
+    timeout-minutes: 30
+
+    steps:
+
+      # ---------------------------------------------------------
+      # Pull Docker Image
+      # ---------------------------------------------------------
+
+      - name: Pull Docker Image
+        run: |
+
+          echo ""
+          echo "=============================================="
+          echo "Pulling Docker Image From Docker Hub"
+          echo "=============================================="
+
+          docker pull testautomation093/pw-framework:latest
+
+      # ---------------------------------------------------------
+      # Verify Docker Image
+      # ---------------------------------------------------------
+
+      - name: Verify Docker Image
+        run: docker images
+
+      # ---------------------------------------------------------
+      # Execute STAGE Sanity Suite
+      # ---------------------------------------------------------
+
+      - name: Execute STAGE Sanity Suite
+        run: |
+
+          echo ""
+          echo "=============================================="
+          echo "Running STAGE Sanity Suite Inside Docker"
+          echo "=============================================="
+
+          mkdir -p reports
+          mkdir -p allure-results
+
+          docker run --rm \
+            -e CI=true \
+            -e ENV=stage \
+            -v ${{ github.workspace }}/reports:/app/reports \
+            -v ${{ github.workspace }}/allure-results:/app/allure-results \
+            testautomation093/pw-framework:latest
+
+      # ---------------------------------------------------------
+      # Generate Allure Report
+      # ---------------------------------------------------------
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean -o allure-report
+
+      # ---------------------------------------------------------
+      # Upload HTML Report
+      # ---------------------------------------------------------
+
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-html-report
+          path: reports/html-report/
+          retention-days: 30
+
+      # ---------------------------------------------------------
+      # Upload Allure Report
+      # ---------------------------------------------------------
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage-allure-report
+          path: allure-report/
+          retention-days: 30
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 7
+# DEPLOY TO PROD
+# (SIMULATION ONLY)
+# ═══════════════════════════════════════════════════════════════
+
+deploy-prod:
+
+  name: 🚀 Deploy Application to PROD
+
+  needs: stage-sanity
+
+  runs-on: ubuntu-latest
+
+  environment: production
+
+  steps:
+
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: application-build
+        path: build-artifact
+
+    - name: Verify Build Artifact
+      run: |
+        echo ""
+        echo "Downloaded Build Artifact"
+        ls -R build-artifact
+
+    - name: Deploy to PROD
+      run: |
+
+        echo ""
+        echo "=============================================="
+        echo "Deploying Application to PRODUCTION"
+        echo "=============================================="
+
+        echo ""
+        echo "Application Successfully Deployed ✅"
+
+        echo ""
+        echo "Production URL"
+        echo "https://www.company.com"
+
+        echo ""
+        echo "Pipeline Moving To Report Publishing..."
+
+        echo "=============================================="
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 8
+# PUBLISH REPORTS TO GITHUB PAGES
+# ═══════════════════════════════════════════════════════════════
+
+publish-reports:
+
+  name: 📊 Publish Reports to GitHub Pages
+
+  needs:
+    - deploy-prod
+    - qa-regression
+    - stage-sanity
+
+  if: always()
+
+  runs-on: ubuntu-latest
+
+  permissions:
+    contents: write
+    pages: write
+    id-token: write
+
+  steps:
+
+    # ---------------------------------------------------------
+    # Download Reports
+    # ---------------------------------------------------------
+
+    - name: Download QA HTML Report
+      uses: actions/download-artifact@v4
+      with:
+        name: qa-html-report
+        path: downloaded-reports/qa/html
+
+    - name: Download QA Allure Report
+      uses: actions/download-artifact@v4
+      with:
+        name: qa-allure-report
+        path: downloaded-reports/qa/allure
+
+    - name: Download STAGE HTML Report
+      uses: actions/download-artifact@v4
+      with:
+        name: stage-html-report
+        path: downloaded-reports/stage/html
+
+    - name: Download STAGE Allure Report
+      uses: actions/download-artifact@v4
+      with:
+        name: stage-allure-report
+        path: downloaded-reports/stage/allure
+
+    - name: Download Unit Test Reports
+      uses: actions/download-artifact@v4
+      with:
+        name: unit-test-results
+        path: downloaded-reports/unit-tests
+
+    # ---------------------------------------------------------
+    # Organize Reports
+    # ---------------------------------------------------------
+
+    - name: Organize Reports
+      run: |
+        mkdir -p pages
+        mkdir -p pages/runs/${{ github.run_number }}
+
+        cp -R downloaded-reports/* pages/runs/${{ github.run_number }}/
+
+    # ---------------------------------------------------------
+    # Generate Dashboard
+    # ---------------------------------------------------------
+
+    - name: Generate Dashboard
+      run: |
+
+        cat > pages/index.html <<EOF
+
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+          <title>Enterprise Playwright CI/CD Dashboard</title>
+
+          <style>
+
+            body{
+              font-family:Arial;
+              background:#f4f6f8;
+              margin:40px;
+            }
+
+            h1{
+              color:#1565c0;
+            }
+
+            table{
+              width:100%;
+              border-collapse:collapse;
+            }
+
+            th{
+              background:#1565c0;
+              color:white;
+              padding:15px;
+            }
+
+            td{
+              border:1px solid #ddd;
+              padding:15px;
+            }
+
+            a{
+              text-decoration:none;
+              font-weight:bold;
+            }
+
+          </style>
+
+        </head>
+
+        <body>
+
+        <h1>🚀 Enterprise Playwright CI/CD Dashboard</h1>
+
+        <hr>
+
+        <h2>Pipeline Information</h2>
+
+        <table>
+
+        <tr>
+          <th>Parameter</th>
+          <th>Value</th>
+        </tr>
+
+        <tr>
+          <td>Pipeline</td>
+          <td>Enterprise Playwright CI/CD (Docker)</td>
+        </tr>
+
+        <tr>
+          <td>Run Number</td>
+          <td>${{ github.run_number }}</td>
+        </tr>
+
+        <tr>
+          <td>Branch</td>
+          <td>${{ github.ref_name }}</td>
+        </tr>
+
+        <tr>
+          <td>Triggered By</td>
+          <td>${{ github.actor }}</td>
+        </tr>
+
+        <tr>
+          <td>Docker Image</td>
+          <td>testautomation093/pw-framework:latest</td>
+        </tr>
+
+        </table>
+
+        <br>
+
+        <h2>Automation Reports</h2>
+
+        <table>
+
+        <tr>
+          <th>Environment</th>
+          <th>HTML Report</th>
+          <th>Allure Report</th>
+        </tr>
+
+        <tr>
+
+          <td>QA Regression</td>
+
+          <td>
+            <a href="runs/${{ github.run_number }}/qa/html/index.html">
+            HTML Report
+            </a>
+          </td>
+
+          <td>
+            <a href="runs/${{ github.run_number }}/qa/allure/index.html">
+            Allure Report
+            </a>
+          </td>
+
+        </tr>
+
+        <tr>
+
+          <td>STAGE Sanity</td>
+
+          <td>
+            <a href="runs/${{ github.run_number }}/stage/html/index.html">
+            HTML Report
+            </a>
+          </td>
+
+          <td>
+            <a href="runs/${{ github.run_number }}/stage/allure/index.html">
+            Allure Report
+            </a>
+          </td>
+
+        </tr>
+
+        </table>
+
+        <br>
+
+        <h2>Pipeline Status</h2>
+
+        <table>
+
+        <tr>
+          <th>Stage</th>
+          <th>Status</th>
+        </tr>
+
+        <tr><td>Build + Unit Tests</td><td>✅</td></tr>
+        <tr><td>Deploy DEV</td><td>✅</td></tr>
+        <tr><td>Deploy QA</td><td>✅</td></tr>
+        <tr><td>QA Regression Tests (Docker)</td><td>✅</td></tr>
+        <tr><td>Deploy STAGE</td><td>✅</td></tr>
+        <tr><td>STAGE Sanity Tests (Docker)</td><td>✅</td></tr>
+        <tr><td>Deploy PROD</td><td>✅</td></tr>
+        <tr><td>Publish Reports</td><td>✅</td></tr>
+
+        </table>
+
+        <hr>
+
+        <h3>Generated using GitHub Actions + Docker + Playwright</h3>
+
+        </body>
+
+        </html>
+
+        EOF
+
+    # ---------------------------------------------------------
+    # Deploy to GitHub Pages
+    # ---------------------------------------------------------
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: pages
+        keep_files: true
+
+    # ---------------------------------------------------------
+    # Pipeline Summary
+    # ---------------------------------------------------------
+
+    - name: Pipeline Summary
+      run: |
+
+        echo ""
+        echo "=================================================="
+        echo " ENTERPRISE PLAYWRIGHT CI/CD PIPELINE (DOCKER)"
+        echo "=================================================="
+
+        echo ""
+        echo "Docker Image Used : testautomation093/pw-framework:latest"
+
+        echo ""
+        echo "STEP 1 : Build Application              ✅"
+        echo "STEP 2 : Deploy DEV                     ✅"
+        echo "STEP 3 : Deploy QA                      ✅"
+        echo "STEP 4 : QA Regression (Docker)         ✅"
+        echo "STEP 5 : Deploy STAGE                   ✅"
+        echo "STEP 6 : STAGE Sanity (Docker)          ✅"
+        echo "STEP 7 : Deploy PROD                    ✅"
+        echo "STEP 8 : Publish Reports                ✅"
+
+        echo ""
+        echo "GitHub Pages URL"
+        echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+
+        echo ""
+        echo "Pipeline Completed Successfully 🚀"
