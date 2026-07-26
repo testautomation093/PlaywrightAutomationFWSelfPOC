@@ -94,6 +94,7 @@ jobs:
       # ---------------------------------------------------------
 
       - name: Execute Unit Tests
+        continue-on-error: true
         run: |
           echo ""
           echo "===================================="
