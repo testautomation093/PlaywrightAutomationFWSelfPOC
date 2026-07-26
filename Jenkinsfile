@@ -222,7 +222,7 @@ stage('STEP 4 - QA Regression Tests') {
             echo "Pulling Docker Image from Docker Hub"
             echo "=============================================="
 
-            sh '''
+            bat '''
                 docker pull testautomation093/pw-framework:latest
             '''
 
@@ -230,16 +230,18 @@ stage('STEP 4 - QA Regression Tests') {
             echo "Executing QA Regression Suite Inside Docker"
             echo "=============================================="
 
-            sh '''
-                mkdir -p reports
-                mkdir -p allure-results
+            bat '''
 
-                docker run --rm \
-                  -e CI=true \
-                  -e ENV=qa \
-                  -v ${WORKSPACE}/reports:/app/reports \
-                  -v ${WORKSPACE}/allure-results:/app/allure-results \
-                  testautomation093/pw-framework:latest
+                if not exist reports mkdir reports
+                if not exist allure-results mkdir allure-results
+
+                docker run --rm ^
+                -e CI=true ^
+                -e ENV=qa ^
+                -v "%WORKSPACE%\\reports:/app/reports" ^
+                -v "%WORKSPACE%\\allure-results:/app/allure-results" ^
+                testautomation093/pw-framework:latest
+
             '''
         }
     }
@@ -250,10 +252,12 @@ stage('STEP 4 - QA Regression Tests') {
 
             script {
 
-                sh '''
-                    if [ -d allure-results ]; then
-                        allure generate allure-results --clean -o allure-report
-                    fi
+                bat '''
+
+                    if exist allure-results (
+                        call allure generate allure-results --clean -o allure-report
+                    )
+
                 '''
 
                 archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
@@ -310,7 +314,7 @@ stage('STEP 6 - STAGE Sanity Tests') {
             echo "Pulling Docker Image from Docker Hub"
             echo "=============================================="
 
-            sh '''
+            bat '''
                 docker pull testautomation093/pw-framework:latest
             '''
 
@@ -318,17 +322,19 @@ stage('STEP 6 - STAGE Sanity Tests') {
             echo "Executing STAGE Sanity Suite Inside Docker"
             echo "=============================================="
 
-            sh '''
-                mkdir -p reports
-                mkdir -p allure-results
+            bat '''
 
-                docker run --rm \
-                  -e CI=true \
-                  -e ENV=stage \
-                  -v ${WORKSPACE}/reports:/app/reports \
-                  -v ${WORKSPACE}/allure-results:/app/allure-results \
-                  testautomation093/pw-framework:latest \
-                  npx playwright test --grep @sanity --project=chromium
+                if not exist reports mkdir reports
+                if not exist allure-results mkdir allure-results
+
+                docker run --rm ^
+                -e CI=true ^
+                -e ENV=stage ^
+                -v "%WORKSPACE%\\reports:/app/reports" ^
+                -v "%WORKSPACE%\\allure-results:/app/allure-results" ^
+                testautomation093/pw-framework:latest ^
+                npx playwright test --project=chromium --grep @sanity
+
             '''
         }
     }
@@ -339,10 +345,12 @@ stage('STEP 6 - STAGE Sanity Tests') {
 
             script {
 
-                sh '''
-                    if [ -d allure-results ]; then
-                        allure generate allure-results --clean -o allure-report
-                    fi
+                bat '''
+
+                    if exist allure-results (
+                        call allure generate allure-results --clean -o allure-report
+                    )
+
                 '''
 
                 archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
