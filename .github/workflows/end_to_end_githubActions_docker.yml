@@ -248,7 +248,7 @@ jobs:
       - name: Checkout QA Automation Repository
         uses: actions/checkout@v4
         with:
-          repository: testautomation093/pw-framework
+          repository: testautomation093/PlaywrightAutomationFWSelfPOC
 
       # ---------------------------------------------------------
       # Pull Docker Image from Docker Hub
