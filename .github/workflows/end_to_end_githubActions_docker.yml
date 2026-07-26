@@ -437,7 +437,8 @@ jobs:
             -e ENV=stage \
             -v ${{ github.workspace }}/reports:/app/reports \
             -v ${{ github.workspace }}/allure-results:/app/allure-results \
-            testautomation093/pw-framework:latest
+            testautomation093/pw-framework:latest \
+            npx playwright test --project=chromium --grep @sanity
 
       # ---------------------------------------------------------
       # Generate Allure Report
