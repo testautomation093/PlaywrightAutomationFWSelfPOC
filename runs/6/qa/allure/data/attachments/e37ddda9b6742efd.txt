@@ -1,0 +1,9 @@
+{
+  id: 8558295,
+  name: 'Nishant Goel Automation',
+  email: 'nltech1785047075156@gmail.com',
+  gender: 'male',
+  status: 'active'
+}
+Status Code is :201
+Status Text is :Created

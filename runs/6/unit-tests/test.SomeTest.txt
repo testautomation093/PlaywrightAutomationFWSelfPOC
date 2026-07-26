@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: test.SomeTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.007 sec <<< FAILURE! - in test.SomeTest
+test1(test.SomeTest)  Time elapsed: 0.003 sec  <<< FAILURE!
+java.lang.AssertionError: oops
+	at org.junit.Assert.fail(Assert.java:89)
+	at test.Base.run(Base.java:35)
+	at test.SomeTest.test1(SomeTest.java:32)
+
+test4(test.SomeTest)  Time elapsed: 0 sec  <<< FAILURE!
+java.lang.AssertionError: oops
+	at org.junit.Assert.fail(Assert.java:89)
+	at test.Base.run(Base.java:35)
+	at test.SomeTest.test4(SomeTest.java:44)
+
