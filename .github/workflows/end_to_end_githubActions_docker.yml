@@ -478,337 +478,337 @@ jobs:
 # (SIMULATION ONLY)
 # ═══════════════════════════════════════════════════════════════
 
-deploy-prod:
+  deploy-prod:
 
-  name: 🚀 Deploy Application to PROD
+    name: 🚀 Deploy Application to PROD
 
-  needs: stage-sanity
+    needs: stage-sanity
 
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  environment: production
+    environment: production
 
-  steps:
+    steps:
 
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: application-build
-        path: build-artifact
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: application-build
+          path: build-artifact
 
-    - name: Verify Build Artifact
-      run: |
-        echo ""
-        echo "Downloaded Build Artifact"
-        ls -R build-artifact
+      - name: Verify Build Artifact
+        run: |
+          echo ""
+          echo "Downloaded Build Artifact"
+          ls -R build-artifact
 
-    - name: Deploy to PROD
-      run: |
+      - name: Deploy to PROD
+        run: |
 
-        echo ""
-        echo "=============================================="
-        echo "Deploying Application to PRODUCTION"
-        echo "=============================================="
+          echo ""
+          echo "=============================================="
+          echo "Deploying Application to PRODUCTION"
+          echo "=============================================="
 
-        echo ""
-        echo "Application Successfully Deployed ✅"
+          echo ""
+          echo "Application Successfully Deployed ✅"
 
-        echo ""
-        echo "Production URL"
-        echo "https://www.company.com"
+          echo ""
+          echo "Production URL"
+          echo "https://www.company.com"
 
-        echo ""
-        echo "Pipeline Moving To Report Publishing..."
+          echo ""
+          echo "Pipeline Moving To Report Publishing..."
 
-        echo "=============================================="
+          echo "=============================================="
 
 # ═══════════════════════════════════════════════════════════════
 # STEP 8
 # PUBLISH REPORTS TO GITHUB PAGES
 # ═══════════════════════════════════════════════════════════════
 
-publish-reports:
+  publish-reports:
 
-  name: 📊 Publish Reports to GitHub Pages
+    name: 📊 Publish Reports to GitHub Pages
 
-  needs:
-    - deploy-prod
-    - qa-regression
-    - stage-sanity
+    needs:
+      - deploy-prod
+      - qa-regression
+      - stage-sanity
 
-  if: always()
+    if: always()
 
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  permissions:
-    contents: write
-    pages: write
-    id-token: write
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
-  steps:
+    steps:
 
-    # ---------------------------------------------------------
-    # Download Reports
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # Download Reports
+      # ---------------------------------------------------------
 
-    - name: Download QA HTML Report
-      uses: actions/download-artifact@v4
-      with:
-        name: qa-html-report
-        path: downloaded-reports/qa/html
+      - name: Download QA HTML Report
+        uses: actions/download-artifact@v4
+        with:
+          name: qa-html-report
+          path: downloaded-reports/qa/html
 
-    - name: Download QA Allure Report
-      uses: actions/download-artifact@v4
-      with:
-        name: qa-allure-report
-        path: downloaded-reports/qa/allure
+      - name: Download QA Allure Report
+        uses: actions/download-artifact@v4
+        with:
+          name: qa-allure-report
+          path: downloaded-reports/qa/allure
 
-    - name: Download STAGE HTML Report
-      uses: actions/download-artifact@v4
-      with:
-        name: stage-html-report
-        path: downloaded-reports/stage/html
+      - name: Download STAGE HTML Report
+        uses: actions/download-artifact@v4
+        with:
+          name: stage-html-report
+          path: downloaded-reports/stage/html
 
-    - name: Download STAGE Allure Report
-      uses: actions/download-artifact@v4
-      with:
-        name: stage-allure-report
-        path: downloaded-reports/stage/allure
+      - name: Download STAGE Allure Report
+        uses: actions/download-artifact@v4
+        with:
+          name: stage-allure-report
+          path: downloaded-reports/stage/allure
 
-    - name: Download Unit Test Reports
-      uses: actions/download-artifact@v4
-      with:
-        name: unit-test-results
-        path: downloaded-reports/unit-tests
+      - name: Download Unit Test Reports
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-results
+          path: downloaded-reports/unit-tests
 
-    # ---------------------------------------------------------
-    # Organize Reports
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # Organize Reports
+      # ---------------------------------------------------------
 
-    - name: Organize Reports
-      run: |
-        mkdir -p pages
-        mkdir -p pages/runs/${{ github.run_number }}
+      - name: Organize Reports
+        run: |
+          mkdir -p pages
+          mkdir -p pages/runs/${{ github.run_number }}
 
-        cp -R downloaded-reports/* pages/runs/${{ github.run_number }}/
+          cp -R downloaded-reports/* pages/runs/${{ github.run_number }}/
 
-    # ---------------------------------------------------------
-    # Generate Dashboard
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # Generate Dashboard
+      # ---------------------------------------------------------
 
-    - name: Generate Dashboard
-      run: |
+      - name: Generate Dashboard
+        run: |
 
-        cat > pages/index.html <<EOF
+          cat > pages/index.html <<EOF
 
-        <!DOCTYPE html>
+          <!DOCTYPE html>
 
-        <html>
+          <html>
 
-        <head>
+          <head>
 
-          <title>Enterprise Playwright CI/CD Dashboard</title>
+            <title>Enterprise Playwright CI/CD Dashboard</title>
 
-          <style>
+            <style>
 
-            body{
-              font-family:Arial;
-              background:#f4f6f8;
-              margin:40px;
-            }
+              body{
+                font-family:Arial;
+                background:#f4f6f8;
+                margin:40px;
+              }
 
-            h1{
-              color:#1565c0;
-            }
+              h1{
+                color:#1565c0;
+              }
 
-            table{
-              width:100%;
-              border-collapse:collapse;
-            }
+              table{
+                width:100%;
+                border-collapse:collapse;
+              }
 
-            th{
-              background:#1565c0;
-              color:white;
-              padding:15px;
-            }
+              th{
+                background:#1565c0;
+                color:white;
+                padding:15px;
+              }
 
-            td{
-              border:1px solid #ddd;
-              padding:15px;
-            }
+              td{
+                border:1px solid #ddd;
+                padding:15px;
+              }
 
-            a{
-              text-decoration:none;
-              font-weight:bold;
-            }
+              a{
+                text-decoration:none;
+                font-weight:bold;
+              }
 
-          </style>
+            </style>
 
-        </head>
+          </head>
 
-        <body>
+          <body>
 
-        <h1>🚀 Enterprise Playwright CI/CD Dashboard</h1>
+          <h1>🚀 Enterprise Playwright CI/CD Dashboard</h1>
 
-        <hr>
+          <hr>
 
-        <h2>Pipeline Information</h2>
+          <h2>Pipeline Information</h2>
 
-        <table>
+          <table>
 
-        <tr>
-          <th>Parameter</th>
-          <th>Value</th>
-        </tr>
+          <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+          </tr>
 
-        <tr>
-          <td>Pipeline</td>
-          <td>Enterprise Playwright CI/CD (Docker)</td>
-        </tr>
+          <tr>
+            <td>Pipeline</td>
+            <td>Enterprise Playwright CI/CD (Docker)</td>
+          </tr>
 
-        <tr>
-          <td>Run Number</td>
-          <td>${{ github.run_number }}</td>
-        </tr>
+          <tr>
+            <td>Run Number</td>
+            <td>${{ github.run_number }}</td>
+          </tr>
 
-        <tr>
-          <td>Branch</td>
-          <td>${{ github.ref_name }}</td>
-        </tr>
+          <tr>
+            <td>Branch</td>
+            <td>${{ github.ref_name }}</td>
+          </tr>
 
-        <tr>
-          <td>Triggered By</td>
-          <td>${{ github.actor }}</td>
-        </tr>
+          <tr>
+            <td>Triggered By</td>
+            <td>${{ github.actor }}</td>
+          </tr>
 
-        <tr>
-          <td>Docker Image</td>
-          <td>testautomation093/pw-framework:latest</td>
-        </tr>
+          <tr>
+            <td>Docker Image</td>
+            <td>testautomation093/pw-framework:latest</td>
+          </tr>
 
-        </table>
+          </table>
 
-        <br>
+          <br>
 
-        <h2>Automation Reports</h2>
+          <h2>Automation Reports</h2>
 
-        <table>
+          <table>
 
-        <tr>
-          <th>Environment</th>
-          <th>HTML Report</th>
-          <th>Allure Report</th>
-        </tr>
+          <tr>
+            <th>Environment</th>
+            <th>HTML Report</th>
+            <th>Allure Report</th>
+          </tr>
 
-        <tr>
+          <tr>
 
-          <td>QA Regression</td>
+            <td>QA Regression</td>
 
-          <td>
-            <a href="runs/${{ github.run_number }}/qa/html/index.html">
-            HTML Report
-            </a>
-          </td>
+            <td>
+              <a href="runs/${{ github.run_number }}/qa/html/index.html">
+              HTML Report
+              </a>
+            </td>
 
-          <td>
-            <a href="runs/${{ github.run_number }}/qa/allure/index.html">
-            Allure Report
-            </a>
-          </td>
+            <td>
+              <a href="runs/${{ github.run_number }}/qa/allure/index.html">
+              Allure Report
+              </a>
+            </td>
 
-        </tr>
+          </tr>
 
-        <tr>
+          <tr>
 
-          <td>STAGE Sanity</td>
+            <td>STAGE Sanity</td>
 
-          <td>
-            <a href="runs/${{ github.run_number }}/stage/html/index.html">
-            HTML Report
-            </a>
-          </td>
+            <td>
+              <a href="runs/${{ github.run_number }}/stage/html/index.html">
+              HTML Report
+              </a>
+            </td>
 
-          <td>
-            <a href="runs/${{ github.run_number }}/stage/allure/index.html">
-            Allure Report
-            </a>
-          </td>
+            <td>
+              <a href="runs/${{ github.run_number }}/stage/allure/index.html">
+              Allure Report
+              </a>
+            </td>
 
-        </tr>
+          </tr>
 
-        </table>
+          </table>
 
-        <br>
+          <br>
 
-        <h2>Pipeline Status</h2>
+          <h2>Pipeline Status</h2>
 
-        <table>
+          <table>
 
-        <tr>
-          <th>Stage</th>
-          <th>Status</th>
-        </tr>
+          <tr>
+            <th>Stage</th>
+            <th>Status</th>
+          </tr>
 
-        <tr><td>Build + Unit Tests</td><td>✅</td></tr>
-        <tr><td>Deploy DEV</td><td>✅</td></tr>
-        <tr><td>Deploy QA</td><td>✅</td></tr>
-        <tr><td>QA Regression Tests (Docker)</td><td>✅</td></tr>
-        <tr><td>Deploy STAGE</td><td>✅</td></tr>
-        <tr><td>STAGE Sanity Tests (Docker)</td><td>✅</td></tr>
-        <tr><td>Deploy PROD</td><td>✅</td></tr>
-        <tr><td>Publish Reports</td><td>✅</td></tr>
+          <tr><td>Build + Unit Tests</td><td>✅</td></tr>
+          <tr><td>Deploy DEV</td><td>✅</td></tr>
+          <tr><td>Deploy QA</td><td>✅</td></tr>
+          <tr><td>QA Regression Tests (Docker)</td><td>✅</td></tr>
+          <tr><td>Deploy STAGE</td><td>✅</td></tr>
+          <tr><td>STAGE Sanity Tests (Docker)</td><td>✅</td></tr>
+          <tr><td>Deploy PROD</td><td>✅</td></tr>
+          <tr><td>Publish Reports</td><td>✅</td></tr>
 
-        </table>
+          </table>
 
-        <hr>
+          <hr>
 
-        <h3>Generated using GitHub Actions + Docker + Playwright</h3>
+          <h3>Generated using GitHub Actions + Docker + Playwright</h3>
 
-        </body>
+          </body>
 
-        </html>
+          </html>
 
-        EOF
+          EOF
 
-    # ---------------------------------------------------------
-    # Deploy to GitHub Pages
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # Deploy to GitHub Pages
+      # ---------------------------------------------------------
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: pages
-        keep_files: true
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: pages
+          keep_files: true
 
-    # ---------------------------------------------------------
-    # Pipeline Summary
-    # ---------------------------------------------------------
+      # ---------------------------------------------------------
+      # Pipeline Summary
+      # ---------------------------------------------------------
 
-    - name: Pipeline Summary
-      run: |
+      - name: Pipeline Summary
+        run: |
 
-        echo ""
-        echo "=================================================="
-        echo " ENTERPRISE PLAYWRIGHT CI/CD PIPELINE (DOCKER)"
-        echo "=================================================="
+          echo ""
+          echo "=================================================="
+          echo " ENTERPRISE PLAYWRIGHT CI/CD PIPELINE (DOCKER)"
+          echo "=================================================="
 
-        echo ""
-        echo "Docker Image Used : testautomation093/pw-framework:latest"
+          echo ""
+          echo "Docker Image Used : testautomation093/pw-framework:latest"
 
-        echo ""
-        echo "STEP 1 : Build Application              ✅"
-        echo "STEP 2 : Deploy DEV                     ✅"
-        echo "STEP 3 : Deploy QA                      ✅"
-        echo "STEP 4 : QA Regression (Docker)         ✅"
-        echo "STEP 5 : Deploy STAGE                   ✅"
-        echo "STEP 6 : STAGE Sanity (Docker)          ✅"
-        echo "STEP 7 : Deploy PROD                    ✅"
-        echo "STEP 8 : Publish Reports                ✅"
+          echo ""
+          echo "STEP 1 : Build Application              ✅"
+          echo "STEP 2 : Deploy DEV                     ✅"
+          echo "STEP 3 : Deploy QA                      ✅"
+          echo "STEP 4 : QA Regression (Docker)         ✅"
+          echo "STEP 5 : Deploy STAGE                   ✅"
+          echo "STEP 6 : STAGE Sanity (Docker)          ✅"
+          echo "STEP 7 : Deploy PROD                    ✅"
+          echo "STEP 8 : Publish Reports                ✅"
 
-        echo ""
-        echo "GitHub Pages URL"
-        echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo ""
+          echo "GitHub Pages URL"
+          echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
 
-        echo ""
-        echo "Pipeline Completed Successfully 🚀"
+          echo ""
+          echo "Pipeline Completed Successfully 🚀"
