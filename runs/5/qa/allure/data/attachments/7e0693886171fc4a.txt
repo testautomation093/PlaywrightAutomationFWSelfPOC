@@ -1,0 +1,72 @@
+Response Body is :  [
+  {
+    id: 8558205,
+    name: 'Manish',
+    email: 'apiAutomation0.7291605300443217@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558204,
+    name: 'Manish',
+    email: 'apiAutomation0.032479314822646876@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558203,
+    name: 'Manish',
+    email: 'apiAutomation0.9475660334042894@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558202,
+    name: 'Manish',
+    email: 'apiAutomation0.14292946356416736@gmail.com',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558146,
+    name: 'Ashlesh Marar',
+    email: 'ashlesh_marar@stoltenberg.test',
+    gender: 'female',
+    status: 'active'
+  },
+  {
+    id: 8558145,
+    name: 'Mrs. Devi Achari',
+    email: 'devi_achari_mrs@macejkovic.example',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558144,
+    name: 'Amrita Nambeesan',
+    email: 'nambeesan_amrita@hickle.test',
+    gender: 'male',
+    status: 'active'
+  },
+  {
+    id: 8558143,
+    name: 'Sarisha Gill JD',
+    email: 'gill_sarisha_jd@kris.test',
+    gender: 'male',
+    status: 'inactive'
+  },
+  {
+    id: 8558142,
+    name: 'Sarala Dutta',
+    email: 'sarala_dutta@bogisich.test',
+    gender: 'male',
+    status: 'inactive'
+  },
+  {
+    id: 8558141,
+    name: 'Kanti Devar',
+    email: 'devar_kanti@williamson-schimmel.example',
+    gender: 'female',
+    status: 'inactive'
+  }
+]

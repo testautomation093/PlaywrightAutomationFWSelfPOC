@@ -1,206 +1,166 @@
 
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
-    <title>Enterprise Playwright CI/CD Reports</title>
+  <title>Enterprise Playwright CI/CD Dashboard</title>
 
-    <style>
+  <style>
 
-        body{
-            font-family:Arial;
-            background:#f4f6f8;
-            margin:40px;
-        }
+    body{
+      font-family:Arial;
+      background:#f4f6f8;
+      margin:40px;
+    }
 
-        h1{
-            color:#1565c0;
-        }
+    h1{
+      color:#1565c0;
+    }
 
-        table{
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
 
-            border-collapse:collapse;
-            width:100%;
-        }
+    th{
+      background:#1565c0;
+      color:white;
+      padding:15px;
+    }
 
-        th{
+    td{
+      border:1px solid #ddd;
+      padding:15px;
+    }
 
-            background:#1565c0;
-            color:white;
-            padding:15px;
-        }
+    a{
+      text-decoration:none;
+      font-weight:bold;
+    }
 
-        td{
-
-            border:1px solid #ddd;
-            padding:15px;
-        }
-
-        a{
-
-            text-decoration:none;
-            font-weight:bold;
-        }
-
-    </style>
+  </style>
 
 </head>
 
 <body>
 
-    <h1>🚀 Enterprise Playwright CI/CD Dashboard</h1>
+<h1>🚀 Enterprise Playwright CI/CD Dashboard</h1>
 
-    <hr>
+<hr>
 
-    <h2>Pipeline Information</h2>
+<h2>Pipeline Information</h2>
 
-    <table>
+<table>
 
-        <tr>
-            <th>Parameter</th>
-            <th>Value</th>
-        </tr>
+<tr>
+  <th>Parameter</th>
+  <th>Value</th>
+</tr>
 
-        <tr>
-            <td>Pipeline</td>
-            <td>Enterprise Playwright CI/CD</td>
-        </tr>
+<tr>
+  <td>Pipeline</td>
+  <td>Enterprise Playwright CI/CD (Docker)</td>
+</tr>
 
-        <tr>
-            <td>Run Number</td>
-            <td>9</td>
-        </tr>
+<tr>
+  <td>Run Number</td>
+  <td>5</td>
+</tr>
 
-        <tr>
-            <td>Branch</td>
-            <td>master</td>
-        </tr>
+<tr>
+  <td>Branch</td>
+  <td>master</td>
+</tr>
 
-        <tr>
-            <td>Triggered By</td>
-            <td>testautomation093</td>
-        </tr>
+<tr>
+  <td>Triggered By</td>
+  <td>testautomation093</td>
+</tr>
 
-        <tr>
-            <td>Environment</td>
-            <td>stage</td>
-        </tr>
+<tr>
+  <td>Docker Image</td>
+  <td>testautomation093/pw-framework:latest</td>
+</tr>
 
-    </table>
+</table>
 
-    <br>
+<br>
 
-    <h2>Automation Reports</h2>
+<h2>Automation Reports</h2>
 
-    <table>
+<table>
 
-        <tr>
+<tr>
+  <th>Environment</th>
+  <th>HTML Report</th>
+  <th>Allure Report</th>
+</tr>
 
-            <th>Environment</th>
-            <th>HTML Report</th>
-            <th>Allure Report</th>
+<tr>
 
-        </tr>
+  <td>QA Regression</td>
 
-        <tr>
+  <td>
+    <a href="runs/5/qa/html/index.html">
+    HTML Report
+    </a>
+  </td>
 
-            <td>QA Regression</td>
+  <td>
+    <a href="runs/5/qa/allure/index.html">
+    Allure Report
+    </a>
+  </td>
 
-            <td>
-                <a href="runs/9/qa/html/index.html">
-                View HTML Report
-                </a>
-            </td>
+</tr>
 
-            <td>
-                <a href="runs/9/qa/allure/index.html">
-                View Allure Report
-                </a>
-            </td>
+<tr>
 
-        </tr>
+  <td>STAGE Sanity</td>
 
-        <tr>
+  <td>
+    <a href="runs/5/stage/html/index.html">
+    HTML Report
+    </a>
+  </td>
 
-            <td>STAGE Sanity</td>
+  <td>
+    <a href="runs/5/stage/allure/index.html">
+    Allure Report
+    </a>
+  </td>
 
-            <td>
-                <a href="runs/9/stage/html/index.html">
-                View HTML Report
-                </a>
-            </td>
+</tr>
 
-            <td>
-                <a href="runs/9/stage/allure/index.html">
-                View Allure Report
-                </a>
-            </td>
+</table>
 
-        </tr>
+<br>
 
-    </table>
+<h2>Pipeline Status</h2>
 
-    <br>
+<table>
 
-    <h2>Application CI</h2>
+<tr>
+  <th>Stage</th>
+  <th>Status</th>
+</tr>
 
-    <table>
+<tr><td>Build + Unit Tests</td><td>✅</td></tr>
+<tr><td>Deploy DEV</td><td>✅</td></tr>
+<tr><td>Deploy QA</td><td>✅</td></tr>
+<tr><td>QA Regression Tests (Docker)</td><td>✅</td></tr>
+<tr><td>Deploy STAGE</td><td>✅</td></tr>
+<tr><td>STAGE Sanity Tests (Docker)</td><td>✅</td></tr>
+<tr><td>Deploy PROD</td><td>✅</td></tr>
+<tr><td>Publish Reports</td><td>✅</td></tr>
 
-        <tr>
+</table>
 
-            <th>Stage</th>
-            <th>Status</th>
+<hr>
 
-        </tr>
-
-        <tr>
-
-            <td>Build + Unit Tests</td>
-
-            <td>✅ Completed</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Deploy DEV</td>
-
-            <td>✅ Completed</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Deploy QA</td>
-
-            <td>✅ Completed</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Deploy STAGE</td>
-
-            <td>✅ Completed</td>
-
-        </tr>
-
-        <tr>
-
-            <td>Deploy PROD</td>
-
-            <td>✅ Completed</td>
-
-        </tr>
-
-    </table>
-
-    <br>
-
-    <hr>
-
-    <h3>Generated by GitHub Actions</h3>
+<h3>Generated using GitHub Actions + Docker + Playwright</h3>
 
 </body>
 

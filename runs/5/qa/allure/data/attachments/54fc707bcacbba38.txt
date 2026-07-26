@@ -1,0 +1,7 @@
+Response Body is :  {
+  id: 8558289,
+  name: 'Nishant Goel Trainer',
+  email: 'nltech1785046495483@gmail.com',
+  gender: 'male',
+  status: 'inactive'
+}

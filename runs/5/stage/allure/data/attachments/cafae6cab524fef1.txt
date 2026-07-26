@@ -1,0 +1,10 @@
+Application Creadentials are : nltech04@gmail.com and admin@123
+Searching for the Product : Macbook
+Clicking on the Product : MacBook Pro
+Map(5) {
+  'Brand' => 'Apple',
+  'Product Code' => 'Product 18',
+  'Reward Points' => '800',
+  'Availability' => 'In Stock',
+  'Product Price' => '$2,000.00'
+}
